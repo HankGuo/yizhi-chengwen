@@ -1,0 +1,16 @@
+# 私钥与签发记录——严禁提交公开仓库
+tools/keys.json
+tools/issued.log
+
+# 商业文档不随公开仓库发布（截图除外）
+docs/*
+!docs/screenshots/
+
+# 授权签发工具不随公开仓库发布
+tools/
+
+# 本地杂项
+*.log
+.DS_Store
+__test_token.txt
+node_modules/
