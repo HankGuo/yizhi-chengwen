@@ -3,7 +3,7 @@
 > **选文种 · 填要素 · 交材料。** AI 拟稿 + GB/T 9704-2012 国标排版，10 秒生成可直接使用的标准公文 Word 文档。
 > 纯前端 · 免安装 · 零服务器成本 · 买断制商业产品。
 
-<!-- 线上地址部署后填写：https://hankguo.github.io/yizhi-chengwen/ -->
+**线上地址：https://hankguo.github.io/yizhi-chengwen/** （GitHub Pages，main 为源码、pages 分支为部署产物）
 
 ![选择文种](docs/screenshots/01-选择文种.png)
 
