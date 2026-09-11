@@ -43,10 +43,11 @@ ok(window.Checker.run(mkCfg('一、总体要求\n一是a。二是b。', { date: 
 
 // ---------- 3. License ----------
 console.log('\n[License]');
-const lic = window.License.verify('YIZHI1.eyJwcm9kIjoieWl6aGkiLCJ0eXBlIjoicHJvIiwibmFtZSI6IumXsumxvOiuouWNlS1TQU1QTEUtMjAyNjA5MTIiLCJpYXQiOiIyMDI2LTA5LTExIn0._RFqY7oZx6qUtqpnIfP4ScmmsAC0mKFu9F-44TgAJAZU2ZTpFy3Onx2TEyeQBP3qNpinyida1MYUF-Ix7AfJAg');
+const SAMPLE_LICENSE = 'YIZHI1.eyJwcm9kIjoieWl6aGkiLCJ0eXBlIjoicHJvIiwibmFtZSI6IumXsumxvOiuouWNlS1TQU1QTEUtMjAyNjA5MTIiLCJpYXQiOiIyMDI2LTA5LTExIn0.gGZirUgeaOR41EAQRir0B1155HM3fiPpcZX6U0u1gUlAPmnlReiNBTyW4hMqBR2786eaLKsgS8MiY9YEtd6GAA';
+const lic = window.License.verify(SAMPLE_LICENSE);
 ok(lic.ok === true && lic.payload.name === '闲鱼订单-SAMPLE-20260912', '有效激活码验签通过');
 ok(window.License.verify('YIZHI1.abc.def').ok === false, '伪造激活码被拒绝');
-const tampered = 'YIZHI1.eyJwcm9kIjoieWl6aGkiLCJ0eXBlIjoicHJvIiwibmFtZSI6IumXsumxvOiuouWNlS1TQU1QTEUtMjAyNjA5MTMiLCJpYXQiOiIyMDI2LTA5LTExIn0._RFqY7oZx6qUtqpnIfP4ScmmsAC0mKFu9F-44TgAJAZU2ZTpFy3Onx2TEyeQBP3qNpinyida1MYUF-Ix7AfJAg';
+const tampered = SAMPLE_LICENSE.replace('MjAyNjA5MTIi', 'MjAyNjA5MTM=')+'=';// payload 篡改一位
 ok(window.License.verify(tampered).ok === false, '篡改 payload 被签名拒绝');
 ok(window.WENZHONG.filter(w => w.free).length === 5, '免费文种恰好 5 种');
 ok(window.License.FREE_TYPES.size === 5, '免费集合一致');
