@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一纸成文 · 三步出标准公文</title>
+<meta name="description" content="选文种、填要素，AI 拟稿加国标排版，10 秒生成符合《党政机关公文格式》（GB/T 9704-2012）的标准公文 Word 文档。免安装，浏览器直接使用。">
+<link rel="stylesheet" href="vendor/phosphor/style.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23B42318'/><text x='50' y='70' font-size='54' text-anchor='middle' fill='white' font-family='serif' font-weight='700'>文</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="seal">文</div>
+      <div class="brand-text">
+        <strong>一纸成文</strong>
+        <span>选文种 · 填要素 · 交材料</span>
+      </div>
+    </div>
+    <nav class="topnav">
+      <button class="nav-btn" id="btnDocs" title="本地文稿库"><i class="ph ph-book-open-text"></i><span>文稿库</span></button>
+      <button class="nav-btn" id="btnPresets" title="单位预设：保存常用单位信息，一键套用"><i class="ph ph-buildings"></i><span>单位预设</span></button>
+      <span id="proBadge" class="pro-badge hidden"><i class="ph ph-seal-check"></i> 已激活</span>
+      <button class="nav-btn" id="btnLicense"><i class="ph ph-key"></i><span>激活</span></button>
+      <button class="nav-btn" id="btnSettings" title="AI 接口设置"><i class="ph ph-gear-six"></i><span>API 设置</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="workspace">
+  <!-- 步骤指示 -->
+  <ol class="steps" id="steps">
+    <li class="step is-active" data-step="1"><span class="step-no">1</span><span class="step-name">选文种</span></li>
+    <li class="step-rule" aria-hidden="true"></li>
+    <li class="step" data-step="2"><span class="step-no">2</span><span class="step-name">填要素</span></li>
+    <li class="step-rule" aria-hidden="true"></li>
+    <li class="step" data-step="3"><span class="step-no">3</span><span class="step-name">成文</span></li>
+  </ol>
+
+  <!-- 步骤 1：选文种 -->
+  <section id="step1" class="panel">
+    <div class="panel-head">
+      <div>
+        <h1>选择文种</h1>
+        <p class="sub">15 种法定公文依据《党政机关公文处理工作条例》，7 种高频事务文书。标有「上行」的文种将自动启用签发人版式。</p>
+      </div>
+      <label class="search">
+        <i class="ph ph-magnifying-glass"></i>
+        <input id="wzSearch" type="search" placeholder="搜索文种，如：通知" autocomplete="off">
+      </label>
+    </div>
+    <div id="wzGrid"></div>
+  </section>
+
+  <!-- 步骤 2：填要素 -->
+  <section id="step2" class="panel hidden">
+    <div class="panel-head">
+      <div>
+        <button class="back-btn" id="btnBack1"><i class="ph ph-arrow-left"></i> 重选文种</button>
+        <h1 id="wzTitle">通知</h1>
+        <p class="sub" id="wzDesc"></p>
+      </div>
+    </div>
+    <div id="presetChips" class="chip-row hidden">
+      <span class="chip-row-label">套用单位</span>
+      <div id="presetChipsList" class="chip-list"></div>
+    </div>
+    <div class="form-grid" id="formFields"></div>
+
+    <div class="field body-field">
+      <div class="field-head">
+        <label for="bodyText">正文</label>
+        <span class="field-hint">层级用「一、」「（一）」「1.」，一行一段；【　】为待填占位</span>
+      </div>
+      <textarea id="bodyText" rows="15" spellcheck="false" placeholder="点击下方「AI 拟稿」自动生成，或「套用框架」快速起稿，也可直接粘贴已有正文"></textarea>
+      <div class="body-status">
+        <span id="bodyCount" class="muted"></span>
+        <span class="spacer"></span>
+        <span id="aiStatus" class="ai-status"></span>
+        <button id="aiStopBtn" class="btn btn-danger-ghost hidden"><i class="ph ph-stop-circle"></i> 停止</button>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button id="aiBtn" class="btn btn-primary"><i class="ph ph-sparkle"></i> AI 拟稿</button>
+      <button id="fwBtn" class="btn btn-secondary"><i class="ph ph-frame-corners"></i> 套用框架</button>
+      <button id="sampleBtn" class="btn btn-secondary"><i class="ph ph-article"></i> 填入示例</button>
+      <span class="spacer"></span>
+      <button id="saveDocBtn" class="btn btn-secondary"><i class="ph ph-floppy-disk"></i> 存入文稿库</button>
+      <button id="toStep3Btn" class="btn btn-primary"><i class="ph ph-file-arrow-down"></i> 生成文书</button>
+    </div>
+    <p class="byok-note">AI 拟稿使用你自己的 API Key（<a href="#" id="byokLink">在 API 设置中配置</a>），请求由浏览器直发服务商，正文不经过任何中间服务器，一篇成本约 1 分钱。</p>
+  </section>
+
+  <!-- 步骤 3：成文 -->
+  <section id="step3" class="panel hidden">
+    <div class="panel-head">
+      <div>
+        <button class="back-btn" id="btnBack2"><i class="ph ph-arrow-left"></i> 返回修改</button>
+        <h1>成文预览</h1>
+        <p class="sub" id="previewMeta"></p>
+      </div>
+    </div>
+    <div class="result-layout">
+      <aside class="side-rail">
+        <div class="rail-block">
+          <h3><i class="ph ph-sliders-horizontal"></i> 版式选项</h3>
+          <div id="options"></div>
+        </div>
+        <div class="rail-block">
+          <h3><i class="ph ph-check-fat"></i> 格式自查</h3>
+          <div id="checkList" class="check-list"></div>
+        </div>
+      </aside>
+      <div class="preview-col">
+        <div class="preview-toolbar">
+          <span id="pageBadge" class="page-badge"><i class="ph ph-files"></i> 1 页</span>
+          <span class="spacer"></span>
+          <button class="tool-btn" id="zoomOut" title="缩小"><i class="ph ph-magnifying-glass-minus"></i></button>
+          <button class="tool-btn" id="zoomFit" title="适应宽度"><i class="ph ph-frame-corners"></i></button>
+          <button class="tool-btn" id="zoomIn" title="放大"><i class="ph ph-magnifying-glass-plus"></i></button>
+          <button class="tool-btn" id="printBtn" title="打印或导出 PDF"><i class="ph ph-printer"></i> 打印 / PDF</button>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+          <div class="preview-inner" id="preview"></div>
+          <p class="preview-note">版式预览为近似效果，分页以 WPS / Word 打开下载文件后的实际显示为准；红头、字号、行距、页码等参数均按 GB/T 9704-2012 写入文档。</p>
+        </div>
+        <div class="action-bar">
+          <button id="dlBtn" class="btn btn-primary btn-lg"><i class="ph ph-download-simple"></i> 下载 .docx</button>
+          <span class="spacer"></span>
+          <div id="dlGate" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>本工具仅供写作参考与格式排版辅助，正式公文须经本单位核稿签发后使用；AI 生成内容请务必人工核实。</p>
+    <p>格式依据 GB/T 9704-2012《党政机关公文格式》 · 纯本地运行，正文不上传服务器 · 用户 API Key 仅存于本人浏览器</p>
+  </footer>
+</main>
+
+<!-- 弹窗：API 设置 -->
+<div class="modal-mask hidden" id="settingsMask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-head">
+      <h2 id="settingsTitle">API 设置</h2>
+      <button class="icon-btn" data-close><i class="ph ph-x"></i></button>
+    </div>
+    <div class="chip-list" id="aiPresets"></div>
+    <div class="field">
+      <label for="cfgBase">接口地址（OpenAI 兼容）</label>
+      <input id="cfgBase" placeholder="https://api.deepseek.com" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="cfgModel">模型名称</label>
+      <input id="cfgModel" placeholder="deepseek-chat" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="cfgKey">API Key</label>
+      <input id="cfgKey" type="password" placeholder="sk-…" autocomplete="off">
+      <p class="field-help">Key 仅保存在本机浏览器 localStorage。推荐 DeepSeek：platform.deepseek.com 注册即送额度。</p>
+    </div>
+    <div id="connResult" class="conn-result hidden"></div>
+    <div class="modal-actions">
+      <button id="testConnBtn" class="btn btn-secondary"><i class="ph ph-plugs-connected"></i> 测试连接</button>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost" data-close>取消</button>
+      <button id="saveConnBtn" class="btn btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗：激活 -->
+<div class="modal-mask hidden" id="licenseMask">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>激活专业版</h2>
+      <button class="icon-btn" data-close><i class="ph ph-x"></i></button>
+    </div>
+    <div id="licenseState"></div>
+    <div class="field">
+      <label for="licenseInput">激活码</label>
+      <textarea id="licenseInput" rows="4" placeholder="YIZHI1.…" style="font-family:ui-monospace,monospace;font-size:12px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button id="deBtn" class="btn btn-ghost hidden">退出激活</button>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost" data-close>关闭</button>
+      <button id="activateBtn" class="btn btn-primary">激活</button>
+    </div>
+    <p class="field-help">专业版解锁全部 22 种文种、框架库与高级版式。一次买断，永久使用；激活码本机离线验证，无需联网。</p>
+  </div>
+</div>
+
+<!-- 弹窗：单位预设 -->
+<div class="modal-mask hidden" id="presetsMask">
+  <div class="modal modal-wide" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>单位预设</h2>
+      <button class="icon-btn" data-close><i class="ph ph-x"></i></button>
+    </div>
+    <p class="modal-sub">保存单位红头、落款、抄送等常用信息，写文时一键套用，不用每次重填。</p>
+    <div class="preset-editor">
+      <div class="form-grid">
+        <div class="field"><label for="pName">预设名称</label><input id="pName" placeholder="如：县政府办"></div>
+        <div class="field"><label for="pOrg">发文单位（红头）</label><input id="pOrg" placeholder="如：云溪县人民政府文件"></div>
+        <div class="field"><label for="pDocno">字号前缀（可选）</label><input id="pDocno" placeholder="如：云政办发〔2026〕　号"></div>
+        <div class="field"><label for="pCc">常用抄送（可选）</label><input id="pCc" placeholder="如：县委办公室、县人大办公室"></div>
+        <div class="field"><label for="pFont">标题字体</label>
+          <select id="pFont"><option>方正小标宋简体</option><option>华文中宋</option><option>宋体</option></select>
+        </div>
+        <div class="field"><label>版式默认</label>
+          <div class="check-inline"><label><input type="checkbox" id="pRed" checked> 红头</label><label><input type="checkbox" id="pBanji" checked> 版记</label></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="presetDeleteBtn" class="btn btn-danger-ghost hidden">删除当前</button>
+        <span class="spacer"></span>
+        <button id="presetSaveBtn" class="btn btn-primary"><i class="ph ph-plus"></i> 保存预设</button>
+      </div>
+    </div>
+    <div id="presetList" class="preset-list"></div>
+  </div>
+</div>
+
+<!-- 弹窗：文稿库 -->
+<div class="modal-mask hidden" id="docsMask">
+  <div class="modal modal-wide" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>文稿库</h2>
+      <button class="icon-btn" data-close><i class="ph ph-x"></i></button>
+    </div>
+    <p class="modal-sub">保存在本机浏览器中，仅自己可见，最多保留 50 篇。</p>
+    <div id="docsList" class="docs-list"></div>
+  </div>
+</div>
+
+<div id="toastWrap" class="toast-wrap"></div>
+
+<script src="vendor/docx.iife.js"></script>
+<script src="vendor/nacl-fast.min.js"></script>
+<script src="js/wenzhong.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/format.js"></script>
+<script src="js/checker.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/license.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
