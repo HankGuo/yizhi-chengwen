@@ -43,7 +43,7 @@ ok(window.Checker.run(mkCfg('一、总体要求\n一是a。二是b。', { date: 
 
 // ---------- 3. License ----------
 console.log('\n[License]');
-const SAMPLE_LICENSE = 'YIZHI1.eyJwcm9kIjoieWl6aGkiLCJ0eXBlIjoicHJvIiwibmFtZSI6IumXsumxvOiuouWNlS1TQU1QTEUtMjAyNjA5MTIiLCJpYXQiOiIyMDI2LTA5LTExIn0.gGZirUgeaOR41EAQRir0B1155HM3fiPpcZX6U0u1gUlAPmnlReiNBTyW4hMqBR2786eaLKsgS8MiY9YEtd6GAA';
+const SAMPLE_LICENSE = 'YIZHI1.eyJwcm9kIjoieWl6aGkiLCJ0eXBlIjoicHJvIiwibmFtZSI6IumXsumxvOiuouWNlS1TQU1QTEUtMjAyNjA5MTIiLCJpYXQiOiIyMDI2LTA5LTExIn0.TI4RArY830TO45CH6Tv5P8MvukzIJ2BkBixv5fMupQIwNu_na_aPXPXfGf5-izK0rDsQvoJprQjKXCAksi-DBA';
 const lic = window.License.verify(SAMPLE_LICENSE);
 ok(lic.ok === true && lic.payload.name === '闲鱼订单-SAMPLE-20260912', '有效激活码验签通过');
 ok(window.License.verify('YIZHI1.abc.def').ok === false, '伪造激活码被拒绝');

@@ -1,6 +1,6 @@
 // 一纸成文 · 离线激活码验证（Ed25519，tweetnacl）
 window.License = (function () {
-  const PUBLIC_KEY_B64 = 'XD8Y4zYJVmLdAkVUOENwIs5k4pvnXLcQpsCTZhMgvKc=';
+  const PUBLIC_KEY_B64 = 'WqEfdCTN3uOMMac5qSpTjwXnAUQqCOEWTciN2t+mjVY=';
   const STORE = 'yizhi.license';
   const FREE_TYPES = new Set(['tongzhi', 'qingshi', 'baogao', 'han', 'jiyao']); // 免费文种
 
